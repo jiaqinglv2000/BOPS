@@ -12,7 +12,7 @@
 The BOPS algorithm can find small protein complexes from the protein protein interaction network to help biological experiments.
 
 ## Algorithm
-Firstly, the BOPS algorithm calculates the balanced weight. Secondly, the BOPS algorithm divides the origi-nal PPIN into small networks. Thirdly, the BOPS algo-rithm enumerates the connected subset of each small network and determines whether it is a protein complex based on the cohesion of the subset.
+Firstly, the BOPS algorithm calculates the balanced weight. Secondly, the BOPS algorithm divides the origi-nal PPIN into small networks. Thirdly, the BOPS algorithm enumerates the connected subset of each small network and determines whether it is a protein complex based on the cohesion of the subset.
 
 ## Method
 
@@ -91,7 +91,7 @@ The parameters of these methods are set as the recommended values as mentioned i
 The experimental performance proves that the BOPS algorithm can obtain the best results on F-score and ACC when identifying small protein complexes. And the performance of BOPS is better than most of algorithms with respect to the whole protein complexes.
 
 ## Email
-If you have any question, you can contact with [JiaqingLv](jiaqinglv@foxmail.com),[ZhenYao](yaozhen@mail.dlut.edu.cn),[BingLiang](liangbing@dlut.edu.cn) and [YijiaZhang](zhyj@dlut.edu.cn).
+If you have any question, you can contact with jiaqinglv@foxmail.com,yaozhen@mail.dlut.edu.cn,liangbing@dlut.edu.cn and zhyj@dlut.edu.cn.
 ## Acknowledgments
 The project is supported in part by College Student Innovation and Entrepreneurship Training Program Support Project of China (2019101411600010093,2020101411600010129). We are very grateful for the research done by our predecessors.
 
