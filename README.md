@@ -4,7 +4,7 @@
 * [Features](#Features)
 * [Algorithm](#Process)
 * [Method](#Method)
-* [Performance](#Performance)
+* [Experiment](#Experiment)
 * [Email](#Email)
 * [Acknowledgments](#Acknowledgments)
 
@@ -63,7 +63,7 @@ Linux:
 
 ## Experiment
 
-The "Evaluation" folder includes the methods used to evaluate the method and the resulting predicted complexes based on:
+The "evaluation" folder includes the methods used to evaluate the method and the resulting predicted complexes based on:
 
 - the number of predicted complexes
 - Fscore: the harmonic mean of Recall and Precision
