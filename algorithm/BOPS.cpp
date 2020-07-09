@@ -118,20 +118,16 @@ void split_ppi(queue <PPI> &Ppi_queue,vector <PPI> &Splitted_ppi)
     PPI Current_ppi = Ppi_queue.front();
 	Ppi_queue.pop();
 	
-    int MAX = 0,Count = 0,location = -1;
+    int Count = 0,location = -1;
     if (Current_ppi.protein.size() <= MAXP)
     {
         Splitted_ppi.push_back(Current_ppi);
         return;
     }
-    for (int i = 0;i < Current_ppi.protein.size();i++)
-    {
-        MAX = max(MAXN,Current_ppi.protein[i]);
-    }
     
-    int fa[MAXN];
+    int fa[MAXN + 1];
     //Initializes Disjoint Set Union
-    for (int i = 1;i <= MAX;i++)
+    for (int i = 1;i <= MAXN;i++)
     {
         fa[i] = i;
     }
