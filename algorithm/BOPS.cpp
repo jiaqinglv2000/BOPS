@@ -2,9 +2,9 @@
 "Small protein complex prediction algorithm based on protein-protein interaction network segmentation" IEEE/ACM Transactions on Computational Biology and Bioinformatics (TCBB) The project has been submitted and is under review.
 Developer:
 JiaqingLv Dalian University of Technology jiaqinglv@foxmail.com
-ZhenYao Dalian University of Technology yaozhen@mail.dlut.edu.cn
+ZhenYao Dalian University of Technology 22151303@zju.edu.cn
 BingLiang Dalian University of Technology liangbing@dlut.edu.cn
-YijiaZhang Dalian University of Technology zhyj@dlut.edu.cn
+YijiaZhang Dalian University of Technology zhyj@dmu.edu.cn
 */ 
 #include <cstdio>
 #include <vector>
@@ -42,6 +42,10 @@ struct Result
 {
     double cohesion;
     vector <int> protein;
+    friend bool operator < (Result a,Result b)
+    {
+    	return a.cohesion > b.cohesion;
+    }
 };
 
 map <string,int> Protein2id;
@@ -232,43 +236,18 @@ double calculate_complex_cohesion(PPI &Current_ppi,vector <int> &Complex)
     return Cohesion;
 }
 
-void update_result(PPI &Current_ppi,vector <int> &Complex,vector <Result> &result,double Similarity_threshold,double Cohesion_threshold)
+
+
+void update_result(Result &Complex,vector <Result> &result,double Similarity_threshold)
 {//This function determines whether the connected subset is a protein complex and removes protein complexes that are too similar.
-    double Cohesion = calculate_complex_cohesion(Current_ppi,Complex);
-	int Count = 0,location = -1;
-    if (Cohesion <= Cohesion_threshold)
-    { 
-        return;
-    } 
     for (int i = 0;i < result.size();i++)
     {
-        if (calculate_similarity(result[i].protein,Complex) >= Similarity_threshold)
+        if (calculate_similarity(result[i].protein,Complex.protein) >= Similarity_threshold)
         {
-            Count += 1;
-            location = i;
+            return;
         }
     }
-    if (Count >= 2)
-    { 
-        return;
-    } 
-    if (Count == 1)
-    {
-        if (Cohesion < result[location].cohesion)
-        { 
-            return;
-        } 
-        result[location].cohesion = Cohesion;
-		result[location].protein = Complex;
-        return;
-    }
-    if (Count == 0)
-    {
-        result.push_back(Result());
-		result[result.size() - 1].cohesion = Cohesion;
-		result[result.size() - 1].protein = Complex;
-        return;
-    }
+    result.push_back(Complex);
     
     return;
 }
@@ -278,7 +257,7 @@ int get_Current_ppi_protein(PPI &Current_ppi,int x)
 	return lower_bound(Current_ppi.protein.begin(),Current_ppi.protein.end(),x) - Current_ppi.protein.begin();
 }
 
-void get_complexs(PPI &Current_ppi,vector <Result> &result,double Similarity_threshold,double Cohesion_threshold)
+void get_complexs(PPI &Current_ppi,vector <Result> &result,double Similarity_threshold)
 {//This function enumerates the connected subset of each small PPIN
 	bool Connectivity[MAXP][MAXP];
 	map <int,bool> Complex_record;
@@ -328,7 +307,7 @@ void get_complexs(PPI &Current_ppi,vector <Result> &result,double Similarity_thr
 	
 	vector <int> Complex;
 	map <int,bool> :: iterator it;
-	
+	vector <Result> Complex_result;
 	it = Complex_record.begin();
 	while (it != Complex_record.end())
 	{
@@ -342,14 +321,25 @@ void get_complexs(PPI &Current_ppi,vector <Result> &result,double Similarity_thr
 		}
         if (Complex.size() >= 3) 
 		{
-			update_result(Current_ppi,Complex,result,Similarity_threshold,Cohesion_threshold);
+			Result tmp;
+			tmp.protein = Complex;
+			tmp.cohesion = calculate_complex_cohesion(Current_ppi,Complex);
+			Complex_result.push_back(tmp);
 		}
         it++;
+	}
+	
+	if (Complex_result.size() == 0)
+		return;
+	sort(Complex_result.begin(),Complex_result.end());
+	for (int i = 0;i < Complex_result.size();i++)
+	{
+		update_result(Complex_result[i],result,Similarity_threshold);
 	}
 	return;
 }
 
-vector <Result> get_result(PPI &Current_ppi,double Similarity_threshold,double Cohesion_threshold)
+vector <Result> get_result(PPI &Current_ppi,double Similarity_threshold)
 {//This function divides the PPIN into smaller PPIN and calls the function to solve each smaller PPIN
     queue <PPI> Ppi_queue;
     vector <PPI> Splitting_ppi;
@@ -364,7 +354,8 @@ vector <Result> get_result(PPI &Current_ppi,double Similarity_threshold,double C
     for (int i = 0;i < Splitting_ppi.size();i++)
     {
         vector <Result> Temporary_res;
-        get_complexs(Splitting_ppi[i],Temporary_res,Similarity_threshold,Cohesion_threshold); 
+        get_complexs(Splitting_ppi[i],Temporary_res,Similarity_threshold); 
+      
 		for (int j = 0;j < Temporary_res.size();j++)
         {
             result.push_back(Temporary_res[j]);
@@ -374,17 +365,26 @@ vector <Result> get_result(PPI &Current_ppi,double Similarity_threshold,double C
 }
 void write_proteins(vector <Result> Result_complex,string Result_file)
 {////This function writes predicted protein complexes in result
-    ofstream fout(Result_file);
-    int Tmpk = 0;
-    string Tmps;
+  	sort(Result_complex.begin(),Result_complex.end()); 
+	ofstream fout(Result_file);
+	int Tmpk = 0;
+	string Tmps;
+	    
+	int Threshold_complex = min(int(Result_complex.size() * 0.05),int(Result_complex.size() - 1));
+	double Cohesion_threshold = Result_complex[Threshold_complex].cohesion * 0.5;
+		
     for (int i = 0;i < Result_complex.size();i++)
     {
         if (Result_complex[i].protein.size() <= 1)
         {
             continue;
         }
+        if (Result_complex[i].cohesion < Cohesion_threshold)
+        {
+        	break;
+        }
         Tmpk += 1;
-        Tmps = "C" + to_string(Tmpk) + ":";
+        Tmps = "";
         for (int j = 0;j < Result_complex[i].protein.size();j++)
         {
             Tmps = Tmps + " " + Id2protein[Result_complex[i].protein[j]];
@@ -395,37 +395,21 @@ void write_proteins(vector <Result> Result_complex,string Result_file)
     return;
 }
 
-void calculate_cohesion_threshold(PPI &Current_ppi,double &Cohesion_threshold,double ta = 0.03,double tb = -0.6)
-{//This function calculates the similarity threshold based on the ppi density
-	double Network_density = 2.0 * Current_ppi.interaction.size() / Current_ppi.protein.size() / (Current_ppi.protein.size() - 1);
-	Cohesion_threshold = ta * pow(Network_density,tb);
-	return;
-}
 
-void calculate_sim_threshold(PPI &Current_ppi,double &sim)
-{//This function calculates the similarity threshold based on the ppi density
-	double Network_density = 2.0 * Current_ppi.interaction.size() / Current_ppi.protein.size() / (Current_ppi.protein.size() - 1);
-	if (Network_density >= 0.005)
-		sim = 0.25;
-	else
-		sim = 0.45;
-	return;
-}
 
-void print_information(string Ppidata_file,string Result_file,double Balanced_index,double Cohesion_threshold)
+void print_information(string Ppidata_file,string Result_file,double Balanced_index)
 {
 	printf("_________________________________________\n");
 	cout << "The PPI_file is "<< Ppidata_file << endl;
 	cout << "The result_file is "<< Result_file << endl;
 	printf("The balanced index is %.3lf\n",Balanced_index);
-	printf("The cohesion threshold is %.3lf\n",Cohesion_threshold);
 	printf("_________________________________________\n");
 	printf("It will takes tens of minutes.\n");
 }
 
 int main(int argc, char *argv[])
 {
-	double Balanced_index,Similarity_threshold,Cohesion_threshold,ta,tb;
+	double Balanced_index,Similarity_threshold = 0.45;
 	string Ppidata_file,Result_file;
 	PPI Original_ppi;
 	
@@ -434,32 +418,15 @@ int main(int argc, char *argv[])
 	read_proteins(Original_ppi,Ppidata_file);
 	if (argc >= 4)
 	{
-		if (argv[3][0] == 'd')
-			Balanced_index = 1.6;
-		else 
-			sscanf(argv[3],"%lf",&Balanced_index);;
-		
-	}
-	if (argc >= 5)
+		sscanf(argv[3],"%lf",&Balanced_index);
+	}else
 	{
-		if (argv[4][0] == 'd')
-			calculate_cohesion_threshold(Original_ppi,Cohesion_threshold);
-		else
-			sscanf(argv[4],"%lf",&Cohesion_threshold);
+		Balanced_index = 1.5;
 	}
-    
-    if (argc < 4)
-	{
-		Balanced_index = 1.6;
-	}
-    if (argc < 5)
-    {
-		calculate_cohesion_threshold(Original_ppi,Cohesion_threshold);
-	}
-	calculate_sim_threshold(Original_ppi,Similarity_threshold);
-	print_information(Ppidata_file,Result_file,Balanced_index,Cohesion_threshold);
+	
+	print_information(Ppidata_file,Result_file,Balanced_index);
     get_balanced_interaction(Original_ppi,Balanced_index);
-    write_proteins(get_result(Original_ppi,Similarity_threshold,Cohesion_threshold),Result_file);
+    write_proteins(get_result(Original_ppi,Similarity_threshold),Result_file);
     return 0;
 }
 

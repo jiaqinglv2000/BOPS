@@ -12,7 +12,7 @@
 The BOPS algorithm can find small protein complexes from the protein protein interaction network to help biological experiments.
 
 ## Algorithm
-Firstly, the BOPS algorithm calculates the balanced weight. Secondly, the BOPS algorithm divides the origi-nal PPIN into small networks. Thirdly, the BOPS algorithm enumerates the connected subset of each small network and determines whether it is a protein complex based on the cohesion of the subset.
+Firstly, the BOPS algorithm calculates the balanced weights, and replaces the original weights with balanced weights (3.2).Secondly, the BOPS algorithm continuously divides the graphs larger than MAXP until the original PPIN is divided into small networks (3.3.1) and the specific process of segmentation is described in (3.3.2). Thirdly, the BOPS algorithm enumerates the connected subset of each small network (3.4.1), calculates the cohesion of each connected subset (3.4.2), identifies potential protein complexes based on cohesion and removes those that are too similar (3.4.3).
 
 ## Method
 
@@ -32,33 +32,22 @@ Run the BOPS algorithm to get the result as follow:
 
 Windows:
 ```
-BOPS.exe PPI_file result_file balanced_index cohesion_threshold
+BOPS.exe PPI_file result_file
 ```
 Linux:
 ```
-./BOPS PPI_file result_file balanced_index cohesion_threshold
+./BOPS PPI_file result_file
 ```
 
-Specifically, you can input balanced_index and cohesion_threshold on your own.
+Specifically, you can input balanced_index on your own, the default value of it is 1.5.
 
 Windows:
 ```
-BOPS.exe PPI_file result_file 1.5 2.0
+BOPS.exe PPI_file result_file balanced_index
 ```
 Linux:
 ```
-./BOPS PPI_file result_file 1.5 2.0
-```
-
-Meanwhile, You can also only use the default value by inputting "d".
-
-Windows:
-```
-BOPS.exe PPI_file result_file d d
-```
-Linux:
-```
-./BOPS PPI_file result_file d d
+./BOPS PPI_file result_file balanced_index
 ```
 
 ## Experiment
@@ -79,19 +68,19 @@ The match is coded in python. You must use python 2.7 of the interpreter to get 
   			python match.py -n ppi_name.txt reference_name.txt result_name.txt
             
 
-The parameters of these methods are set as the recommended values as mentioned in their original papers. For our method, we set the balance index β to 1.6, pre-exponential factor σ to 0.03 and density index δ to -0.6 as to recommended values.
+The parameters of these methods are set as the recommended values as mentioned in their original papers. For our method, we set the balance index β to 1.5 as to recommended values.
 
 | Datasets         | \#predicated | F\-score | ACC    |
 |------------------|--------------|----------|--------|
-| Krogan\-core     | 247          | 0\.618   | 0\.494 |
-| Krogan\-extended | 265          | 0\.588   | 0\.457 |
-| Gavin            | 321          | 0\.722   | 0\.528 |
-| Collins          | 310          | 0\.629   | 0\.586 |
+| Krogan\-core     | 572          | 0\.576   | 0\.527 |
+| Krogan\-extended | 558          | 0\.560   | 0\.485 |
+| Gavin            | 337          | 0\.679   | 0\.548 |
+| Collins          | 650          | 0\.616   | 0\.542 |
 
 The experimental performance proves that the BOPS algorithm can obtain the best results on F-score and ACC when identifying small protein complexes. And the performance of BOPS is better than most of algorithms with respect to the whole protein complexes.
 
 ## Email
-If you have any question, you can contact with jiaqinglv@foxmail.com,yaozhen@mail.dlut.edu.cn,liangbing@dlut.edu.cn and zhyj@dlut.edu.cn.
+If you have any question, you can contact with jiaqinglv@foxmail.com,22151303@zju.edu.cn,liangbing@dlut.edu.cn and zhyj@dmu.edu.cn.
 ## Acknowledgments
 The project is supported in part by College Student Innovation and Entrepreneurship Training Program Support Project of China (2019101411600010093,2020101411600010129). We are very grateful for the research done by our predecessors.
 
