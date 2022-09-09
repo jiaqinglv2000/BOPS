@@ -4,7 +4,7 @@ Developer:
 JiaqingLv Dalian University of Technology jiaqinglv@foxmail.com
 ZhenYao Dalian University of Technology 22151303@zju.edu.cn
 BingLiang Dalian University of Technology liangbing@dlut.edu.cn
-YijiaZhang Dalian University of Technology zhyj@dmu.edu.cn
+YijiaZhang Dalian Maritime University zhyj@dmu.edu.cn
 */ 
 #include <cstdio>
 #include <vector>
@@ -379,10 +379,13 @@ void write_proteins(vector <Result> Result_complex,string Result_file)
         {
             continue;
         }
+        /*
         if (Result_complex[i].cohesion < Cohesion_threshold)
         {
         	break;
-        }
+        }*/
+        if (i > Result_complex.size() / 2)
+        	break;
         Tmpk += 1;
         Tmps = "";
         for (int j = 0;j < Result_complex[i].protein.size();j++)
