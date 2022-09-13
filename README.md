@@ -12,7 +12,7 @@
 The BOPS algorithm can find small protein complexes from the protein protein interaction network to help biological experiments.
 
 ## Algorithm
-Firstly, the BOPS algorithm calculates the balanced weights, and replaces the original weights with balanced weights (3.2).Secondly, the BOPS algorithm continuously divides the graphs larger than MAXP until the original PPIN is divided into small networks (3.3.1) and the specific process of segmentation is described in (3.3.2). Thirdly, the BOPS algorithm enumerates the connected subset of each small network (3.4.1), calculates the cohesion of each connected subset (3.4.2), identifies potential protein complexes based on cohesion and removes those that are too similar (3.4.3).
+First, the BOPS algorithm calculates the balanced weights, and replaces the original weights with balanced weights. Second, the BOPS algorithm divides the graphs larger than MAXP until the original PPIN is divided into small networks and the details of segmentation is described in (3.4.2). Third, the BOPS algorithm enumerates the connected subset of each small network, calculates the cohesion of each connected subset, identifies potential protein complexes based on cohesion and removes those that are similar.
 
 ## Method
 
@@ -72,10 +72,10 @@ The parameters of these methods are set as the recommended values as mentioned i
 
 | Datasets         | \#predicated | F\-score | ACC    |
 |------------------|--------------|----------|--------|
-| Krogan\-core     | 572          | 0\.576   | 0\.527 |
-| Krogan\-extended | 558          | 0\.560   | 0\.485 |
-| Gavin            | 337          | 0\.679   | 0\.548 |
-| Collins          | 650          | 0\.616   | 0\.542 |
+| Krogan\-core     | 704          | 0\.558   | 0\.528 |
+| Krogan\-extended | 778          | 0\.538   | 0\.482 |
+| Gavin            | 832          | 0\.668   | 0\.560 |
+| Collins          | 794          | 0\.614   | 0\.550 |
 
 The experimental performance proves that the BOPS algorithm can obtain the best results on F-score and ACC when identifying small protein complexes. And the performance of BOPS is better than most of algorithms with respect to the whole protein complexes.
 
