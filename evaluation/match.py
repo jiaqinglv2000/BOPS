@@ -14,7 +14,7 @@ import optparse
 import sys
 import xlwt
 import pandas as pd
-
+from mwmatching import maxWeightMatching
 
 ###########################################################################
 
@@ -87,6 +87,23 @@ def positive_predictive_value(reference, predicted):
         return 0.
     return num / den
 
+def maximum_matching_ratio(reference, predicted, score_threshold=0.25):
+    scores = {}
+
+    n = len(reference)
+    for id1, c1 in enumerate(reference):  #遍历参考集的所有元素
+        for id2, c2 in enumerate(predicted):  #遍历预测集的所有元素
+            score = matching_score(c1, c2)
+            if score <= score_threshold:
+                continue
+
+            scores[id1, id2+n] = score
+
+    input = [(v1, v2, w) for (v1, v2), w in scores.items()]  #items
+    mates = maxWeightMatching(input)
+    score = sum(scores[i, mate] for i, mate in enumerate(mates) if i < mate)
+    return score / n
+
 ###########################################################################
 
 class MatchApplication(object):
@@ -99,6 +116,7 @@ class MatchApplication(object):
                 Fscore=fraction_matched,
                 Recall=recall_matched,
                 Predicted=predicted_matched,
+                MMR=maximum_matching_ratio,
         )
         self.parser = self.create_parser()
 
